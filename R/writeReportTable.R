@@ -3,13 +3,14 @@
 #' @param data Data.frame with data to be reported
 #' @param id Character, the id of the recording
 #' @param lang Character, language to use fr=french, en=english
+#' @param table_format Character, the way the table should be displayed, wide or long
 #' @return no object is returned, table is added to report.
 #' @import kableExtra
 #' @import extrafont
 #' @export
 #' 
 
-writeReportTable = function(data, id, lang) {
+writeReportTable = function(data, id, lang, table_format) {
   if (lang == "fr") {
     label1 = paste0("En l'absence d'information du questionnaire journalier pour",
                     " ce jour, ces informations pourraient \u00EAtre de qualit\u00E9 moindre.")
@@ -42,16 +43,33 @@ writeReportTable = function(data, id, lang) {
   }
   explainAbsenceOfSleep = ifelse(test = AbsenceOfSleep,
                                  yes = paste0("; * ", label2), no = "")
-  kableExtra::kbl(data, booktabs = TRUE, linesep = "") |>
-    kableExtra::kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE) %>%
-    # "ID: ", id, "; ",
-    footnote(general = paste0(explainQ1234, explainAsterisk, explainAbsenceOfSleep),
-             threeparttable = TRUE,
-             footnote_as_chunk = TRUE,
-             general_title = "") |>
-    column_spec(1, width = "4cm") |>
-    row_spec(0, bold = TRUE) |>
-    row_spec(1, bold = TRUE) |>
-    row_spec(5, bold = TRUE) |>
-    kable_styling(font_size = 8)
+  
+  if (table_format == "wide") {
+    kableExtra::kbl(data, booktabs = TRUE, linesep = "") |>
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE) %>%
+      footnote(general = paste0(explainQ1234, explainAsterisk, explainAbsenceOfSleep),
+               threeparttable = TRUE,
+               footnote_as_chunk = TRUE,
+               general_title = "") |>
+      column_spec(1, width = "4cm") |>
+      row_spec(0, bold = TRUE) |>
+      row_spec(1, bold = TRUE) |>
+      row_spec(5, bold = TRUE) |>
+      kable_styling(font_size = 8)
+  } else if (table_format == "long") {
+    data = t(data)
+    data = data[, -c(1, 5)]
+    kableExtra::kbl(data, booktabs = TRUE, linesep = "") |>
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE) %>%
+      footnote(general = paste0(explainQ1234, explainAsterisk, explainAbsenceOfSleep),
+               threeparttable = TRUE,
+               footnote_as_chunk = TRUE,
+               general_title = "") |>
+      column_spec(1, width = "1.8cm") |>
+      column_spec(2:8, width = "1.5cm") |>
+      column_spec(9:10, width = "2.5cm") |>
+      row_spec(0, bold = TRUE) |>
+      row_spec(nrow(data), bold = TRUE) |>
+      kable_styling(font_size = 8)
+  }
 }

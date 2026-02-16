@@ -5,6 +5,8 @@
 #' @param lang Character, language to use fr=french, en=english
 #' @param maskingFile Character to point to csv file with dates to be masked per ID
 #' @param quartile_thresholds Data.frame with thresholds (rows) between the quartiles for 5 variables (columns).
+#' @param sri Boolean, whether to include sri in output
+#' @param luxperday Boolean, whether to include luxperday in output
 #' @return no object is returned, text is printed with cat
 #' @export
 #' 
@@ -13,7 +15,9 @@ prepareTable = function(GGIRoutputdir, id, lang, maskingFile = NULL,
                                                          LIPA = c("3:30", "4:30", "5:40"),
                                                          SB = c("10:00", "10:30", "11:30"),
                                                          Sleeptime = c("8:00", "8:30", "9:15"),
-                                                         SleepPercentage = c(90, 92,  95))) {
+                                                         SleepPercentage = c(90, 92,  95)),
+                        sri = FALSE,
+                        luxperday = FALSE) {
   # labels in multiple languages
   # \u00E0 = à # a with line to the left
   # \u00E9 = é # e with line to the right
@@ -147,22 +151,25 @@ prepareTable = function(GGIRoutputdir, id, lang, maskingFile = NULL,
   # Add diary imputaton code, if present, as final row
   sleeplog_RDatafile = dir(path = paste0(GGIRoutputdir, "/meta"), pattern = "sleeplog_", full.names = TRUE)
   if (length(sleeplog_RDatafile) > 1) stop(paste0("more than one sleeplog RData file found in ", GGIRoutputdir, "/meta"))
-  load(sleeplog_RDatafile)
-  impcode = which(logs_diaries$imputecodelog$ID == id)
-  diaryImputationCodeAvailable = FALSE
-  if (length(impcode) > 0) {
-    diaryImputationCodeAvailable = TRUE
-    logs_diaries$imputecodelog = logs_diaries$imputecodelog[impcode , ]
-    colnames(logs_diaries$imputecodelog) = c("id", "calendar_date", labels[13, lang])
-    P4N = merge(P4N, logs_diaries$imputecodelog, by = c("calendar_date"))
-    P4N = P4N[, which(colnames(P4N) != "id")]
-    summaryColumn[rowIndex] = ""
+  if (length(sleeplog_RDatafile) > 0) {
+    load(sleeplog_RDatafile)
+    impcode = which(logs_diaries$imputecodelog$ID == id)
+    diaryImputationCodeAvailable = FALSE
+    if (length(impcode) > 0) {
+      diaryImputationCodeAvailable = TRUE
+      logs_diaries$imputecodelog = logs_diaries$imputecodelog[impcode , ]
+      colnames(logs_diaries$imputecodelog) = c("id", "calendar_date", labels[13, lang])
+      P4N = merge(P4N, logs_diaries$imputecodelog, by = c("calendar_date"))
+      P4N = P4N[, which(colnames(P4N) != "id")]
+      summaryColumn[rowIndex] = ""
+    }
   }
   names(P4N)[grep(pattern = "SptDuration", x = names(P4N))] = labels[7, lang]
   names(P4N)[grep(pattern = "SleepDurationInSpt", x = names(P4N))] = labels[8, lang]
   names(P4N)[grep(pattern = "ratio", x = names(P4N))] = labels[9, lang]
   P4N = P4N[order(P4N$calendar_date), ]
-  missingNights = which(P4N$cleaningcode > 0)
+  missingNights = which(P4N$cleaningcode > ifelse(length(sleeplog_RDatafile) > 0, yes = 0, no = 1))
+  
   if (length(missingNights) > 0) {
     P4N[missingNights, grep(pattern = "calendar|weekday", x = colnames(P4N), invert = TRUE)] = "-"
   }
@@ -215,7 +222,7 @@ prepareTable = function(GGIRoutputdir, id, lang, maskingFile = NULL,
   thresholds_SB = unlist(lapply(quartile_thresholds$SB, convert_to_hour))
   QlevelSB = getQlevel(meanSB, thresholds_SB)
   summaryColumn[rowIndex + 3] = paste(readableHours(meanSB), QlevelSB)
-  
+
   P5D[, modvar] = unlist(lapply(X = P5D[, modvar] / 60, FUN = readableHours))
   P5D[, ligvar] = unlist(lapply(X = P5D[, ligvar] / 60, FUN = readableHours))
   P5D[, invar] = unlist(lapply(X = P5D[, invar] / 60, FUN = readableHours))
@@ -272,7 +279,8 @@ prepareTable = function(GGIRoutputdir, id, lang, maskingFile = NULL,
     daydata = daydata[, -imputeColumID]
     summaryColumn = summaryColumn[-imputeColumID]
   } else {
-    summaryColumn = summaryColumn[1:(length(summaryColumn) - 1)]
+    # summaryColumn = summaryColumn[1:(length(summaryColumn) - 1)]
+    summaryColumn = summaryColumn[-7]
   }
   daydata = cbind(t(daydata), summaryColumn)
   endSleepSection = 6
@@ -286,7 +294,6 @@ prepareTable = function(GGIRoutputdir, id, lang, maskingFile = NULL,
   row.names(daydata)[grep(pattern = "weekday", x = row.names(daydata))] = "Day of the week"
   colnames(daydata) = daydata[1,]
   daydata = daydata[-1,]
-  
   if (length(daydata) > 0) {
     AbsenceOfSleep = length(grep("-", x = daydata[(nrow(daydata) - 4):nrow(daydata), 1:(ncol(daydata) - 1)], 
                                  invert = TRUE)) == 0

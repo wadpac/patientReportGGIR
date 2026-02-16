@@ -14,4 +14,4 @@ Suggests: knitr, tinytex
 Imports: kableExtra, extrafont, rmarkdown, data.table
 Depends: utils, R (>= 4.1.0)
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

@@ -12,6 +12,9 @@ createReport(
   type = NULL,
   deviceName = NULL,
   quartile_thresholds = NULL,
+  sri = FALSE,
+  luxperday = FALSE,
+  table_format = "wide",
   maskingFile = NULL
 )
 }
@@ -29,6 +32,12 @@ createReport(
 \item{deviceName}{Character to be used as device name, if not specified then we call it movement sensor}
 
 \item{quartile_thresholds}{Data.frame with thresholds (rows) between the quartiles for 5 variables (columns).}
+
+\item{sri}{Boolean, whether to include sri in output}
+
+\item{luxperday}{Boolean, whether to include luxperday in output}
+
+\item{table_format}{Character, the way the table should be displayed, wide or long}
 
 \item{maskingFile}{Character to point to csv file with dates to be masked per ID}
 }

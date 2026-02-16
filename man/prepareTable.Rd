@@ -11,7 +11,9 @@ prepareTable(
   maskingFile = NULL,
   quartile_thresholds = data.frame(MVPA = c("0:15", "0:25", "0:30"), LIPA = c("3:30",
     "4:30", "5:40"), SB = c("10:00", "10:30", "11:30"), Sleeptime = c("8:00", "8:30",
-    "9:15"), SleepPercentage = c(90, 92, 95))
+    "9:15"), SleepPercentage = c(90, 92, 95)),
+  sri = FALSE,
+  luxperday = FALSE
 )
 }
 \arguments{
@@ -24,6 +26,10 @@ prepareTable(
 \item{maskingFile}{Character to point to csv file with dates to be masked per ID}
 
 \item{quartile_thresholds}{Data.frame with thresholds (rows) between the quartiles for 5 variables (columns).}
+
+\item{sri}{Boolean, whether to include sri in output}
+
+\item{luxperday}{Boolean, whether to include luxperday in output}
 }
 \value{
 no object is returned, text is printed with cat

@@ -43,10 +43,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, echo = FALSE}
-data = prepareTable(GGIRoutputdir, id, lang, maskingFile, quartile_thresholds) 
+data = prepareTable(GGIRoutputdir, id, lang, maskingFile, quartile_thresholds,
+                     sri, luxperday) 
 
 # Write table to report
-writeReportTable(data, id, lang)
+writeReportTable(data, id, lang, table_format)
 
 ```
 

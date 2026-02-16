@@ -7,6 +7,9 @@
 #' @param type Character to specify type of report, current options: onepage_luxsleepactcr_A4
 #' @param deviceName Character to be used as device name, if not specified then we call it movement sensor
 #' @param quartile_thresholds Data.frame with thresholds (rows) between the quartiles for 5 variables (columns).
+#' @param sri Boolean, whether to include sri in output
+#' @param luxperday Boolean, whether to include luxperday in output
+#' @param table_format Character, the way the table should be displayed, wide or long
 #' @param maskingFile Character to point to csv file with dates to be masked per ID
 #' @return no object is returned, a pdf is saves is save in the GGIr output directory
 #' @export
@@ -14,6 +17,8 @@
 createReport = function(GGIRoutputdir = NULL, lang = "fr", 
                        idsep = "_", desiredtz = "", type = NULL,
                        deviceName = NULL, quartile_thresholds = NULL,
+                       sri = FALSE, luxperday = FALSE,
+                       table_format = "wide",
                        maskingFile = NULL) {
   
   # Check input  
@@ -30,11 +35,11 @@ createReport = function(GGIRoutputdir = NULL, lang = "fr",
     stop(paste0("Value for lang (", lang, ") is not facilitated"), call. = FALSE)
   }
   if (is.null(GGIRoutputdir)) {
-    stop("Please specific argument GGIRoutputdir.", call. = FALSE)
+    stop("Please specify argument GGIRoutputdir.", call. = FALSE)
   }
   
   if (is.null(quartile_thresholds)) {
-    stop("Please specific argument quartile_thresholds.", call. = FALSE)
+    stop("Please specify argument quartile_thresholds.", call. = FALSE)
   }
   # Extract ids to process
   getID = function(x) {
@@ -69,7 +74,8 @@ createReport = function(GGIRoutputdir = NULL, lang = "fr",
         output_dir = GGIRoutputdir,
         params = list(GGIRoutputdir = GGIRoutputdir, id = id, plotfile = plotfile, lang = lang, desiredtz = desiredtz, docTitle = docTitle,
                       deviceName = deviceName, maskingFile = maskingFile,
-                      quartile_thresholds = quartile_thresholds))
+                      quartile_thresholds = quartile_thresholds,
+                      sri = sri, luxperday = luxperday))
       if (file.exists(plotfile)) file.remove(plotfile)
       file.rename(from = paste0(GGIRoutputdir, "/", pdffilename),
                 to = paste0(reportDir, "/", pdffilename))

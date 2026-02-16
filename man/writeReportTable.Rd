@@ -4,7 +4,7 @@
 \alias{writeReportTable}
 \title{writeReportTable}
 \usage{
-writeReportTable(data, id, lang)
+writeReportTable(data, id, lang, table_format)
 }
 \arguments{
 \item{data}{Data.frame with data to be reported}
@@ -12,6 +12,8 @@ writeReportTable(data, id, lang)
 \item{id}{Character, the id of the recording}
 
 \item{lang}{Character, language to use fr=french, en=english}
+
+\item{table_format}{Character, the way the table should be displayed, wide or long}
 }
 \value{
 no object is returned, table is added to report.
