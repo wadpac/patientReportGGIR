@@ -19,7 +19,7 @@ createReport = function(GGIRoutputdir = NULL, lang = "fr",
   # Check input  
   if (!is.null(type)) {
     if (type == "onepage_luxsleepactcr_A4") {
-      type_template = system.file("templates/onepage_luxsleepactcr_A4.Rmd", package = "patientReportGGIR")[1]
+      type_template = system.file("templates/onepage_luxsleepactcr_A4.qmd", package = "patientReportGGIR")[1]
     } else {
       stop(paste0("Value for type (", type, ") is not facilitated"), call. = FALSE)
     }
@@ -62,14 +62,19 @@ createReport = function(GGIRoutputdir = NULL, lang = "fr",
     
     if (!file.exists(paste0(reportDir, "/", pdffilename))) {
       cat(paste0("\nGenerate report for ", id, "\n"))
-      rmarkdown::render(
+      quarto::quarto_render(
         input = type_template,
-        output_format = "pdf_document",
+        output_format = "pdf",
         output_file = pdffilename,
-        output_dir = GGIRoutputdir,
-        params = list(GGIRoutputdir = GGIRoutputdir, id = id, plotfile = plotfile, lang = lang, desiredtz = desiredtz, docTitle = docTitle,
-                      deviceName = deviceName, maskingFile = maskingFile,
-                      quartile_thresholds = quartile_thresholds))
+        execute_params = list(GGIRoutputdir = GGIRoutputdir,
+                              id = id, 
+                              plotfile = plotfile,
+                              lang = lang,
+                              desiredtz = desiredtz,
+                              docTitle = docTitle,
+                              deviceName = deviceName,
+                              maskingFile = maskingFile,
+                              quartile_thresholds = quartile_thresholds))
       if (file.exists(plotfile)) file.remove(plotfile)
       file.rename(from = paste0(GGIRoutputdir, "/", pdffilename),
                 to = paste0(reportDir, "/", pdffilename))

@@ -1,0 +1,22 @@
+---
+format:
+  pdf:
+    geometry:
+      - left=1cm
+      - right=1cm
+      - top=1.8cm
+      - bottom=1cm
+    papersize: a4paper
+    include-in-header:
+      - "header.text"
+params:
+  GGIRoutputdir: ""
+  id: ""
+  plotfile: ""
+  lang: ""
+  desiredtz: ""
+  docTitle: ""
+  deviceName: ""
+  maskingFile: ""
+  quartile_thresholds: ""
+---

@@ -2,9 +2,9 @@ rm(list = ls())
 graphics.off()
 # Install: https://miktex.org/download
 # On Windows: install tabu package: https://stackoverflow.com/questions/47613096/tabu-sty-not-found
-library(patientGGIR)
+library(patientReportGGIR)
 library(kableExtra)
-# source("R/createReport.R")
+source("R/createReport.R")
 # source("R/plot_lux_sleep_act_cr.R")
 # source("R/prepareTable.R")
 # source("R/introText.R")
